@@ -1,0 +1,35 @@
+pipeline:
+  name: test-redis
+  identifier: testredis
+  projectIdentifier: DhrubaCI
+  orgIdentifier: default
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: dhrubaaccountconnector
+        repoName: redis
+        build: <+input>
+  stages:
+    - stage:
+        name: ci
+        identifier: ci
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: make
+                  identifier: make
+                  spec:
+                    shell: Sh
+                    command: make REDIS_CFLAGS='-Werror' BUILD_TLS=yes
