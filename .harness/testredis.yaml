@@ -33,20 +33,19 @@ pipeline:
                   spec:
                     shell: Sh
                     command: make REDIS_CFLAGS='-Werror' BUILD_TLS=yes
-              - parallel:
-                  - step:
-                      type: Run
-                      name: test
-                      identifier: test
-                      spec:
-                        shell: Sh
-                        command: |-
-                          sudo apt-get install tcl8.6 tclx
-                          ./runtest --verbose --tags -slow --dump-logs
-                  - step:
-                      type: Run
-                      name: module api test
-                      identifier: module_api_test
-                      spec:
-                        shell: Sh
-                        command: ./runtest-moduleapi --verbose --dump-logs
+              - step:
+                  type: Run
+                  name: module api test
+                  identifier: module_api_test
+                  spec:
+                    shell: Sh
+                    command: ./runtest-moduleapi --verbose --dump-logs
+              - step:
+                  type: Run
+                  name: test
+                  identifier: test
+                  spec:
+                    shell: Sh
+                    command: |-
+                      sudo apt-get install tcl8.6 tclx
+                      ./runtest --verbose --tags -slow --dump-logs
