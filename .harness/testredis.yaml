@@ -33,3 +33,10 @@ pipeline:
                   spec:
                     shell: Sh
                     command: make REDIS_CFLAGS='-Werror' BUILD_TLS=yes
+              - step:
+                  type: Run
+                  name: test
+                  identifier: test
+                  spec:
+                    shell: Sh
+                    command: echo successfull
