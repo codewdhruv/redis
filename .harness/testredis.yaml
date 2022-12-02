@@ -39,4 +39,6 @@ pipeline:
                   identifier: test
                   spec:
                     shell: Sh
-                    command: echo successfull
+                    command: |-
+                      sudo apt-get install tcl8.6 tclx
+                      ./runtest --verbose --tags -slow --dump-logs
