@@ -42,3 +42,10 @@ pipeline:
                     command: |-
                       sudo apt-get install tcl8.6 tclx
                       ./runtest --verbose --tags -slow --dump-logs
+              - step:
+                  type: Run
+                  name: module api test
+                  identifier: module_api_test
+                  spec:
+                    shell: Sh
+                    command: ./runtest-moduleapi --verbose --dump-logs
