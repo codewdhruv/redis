@@ -12,6 +12,28 @@ pipeline:
         build: <+input>
   stages:
     - stage:
+        name: build-macos-latest
+        identifier: buildmacoslatest
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: make
+                  identifier: make
+                  spec:
+                    shell: Sh
+                    command: make REDIS_CFLAGS='-Werror'
+    - stage:
         name: build-debian-old
         identifier: builddebianold
         description: ""
