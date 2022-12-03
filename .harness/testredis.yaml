@@ -12,6 +12,30 @@ pipeline:
         build: <+input>
   stages:
     - stage:
+        name: build-32bit
+        identifier: build32bit
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: make
+                  identifier: make
+                  spec:
+                    shell: Sh
+                    command: |-
+                      sudo apt-get update && sudo apt-get install libc6-dev-i386
+                      make REDIS_CFLAGS='-Werror' 32bit
+    - stage:
         name: build-macos-latest
         identifier: buildmacoslatest
         description: ""
