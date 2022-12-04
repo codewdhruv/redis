@@ -12,6 +12,28 @@ pipeline:
         build: <+input>
   stages:
     - stage:
+        name: build-libc-malloc
+        identifier: buildlibcmalloc
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: make
+                  identifier: make
+                  spec:
+                    shell: Sh
+                    command: make REDIS_CFLAGS='-Werror' MALLOC=libc
+    - stage:
         name: build-32bit
         identifier: build32bit
         description: ""
