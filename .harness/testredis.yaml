@@ -12,6 +12,35 @@ pipeline:
         build: <+input>
   stages:
     - stage:
+        name: spell-check
+        identifier: spellcheck
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Install prerequisites
+                  identifier: Install_prerequisites
+                  spec:
+                    shell: Sh
+                    command: sudo pip install -r ./.codespell/requirements.txt
+              - step:
+                  type: Run
+                  name: Spell check
+                  identifier: Spell_check
+                  spec:
+                    shell: Sh
+                    command: codespell --config=./.codespell/.codespellrc
+    - stage:
         name: build-centos7-jemalloc
         identifier: buildcentos7jemalloc
         description: ""
