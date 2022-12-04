@@ -12,6 +12,32 @@ pipeline:
         build: <+input>
   stages:
     - stage:
+        name: build-centos7-jemalloc
+        identifier: buildcentos7jemalloc
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: make
+                  identifier: make
+                  spec:
+                    connectorRef: DhrubajyotiDocker
+                    image: centos:7
+                    shell: Sh
+                    command: |-
+                      yum -y install gcc make
+                      make REDIS_CFLAGS='-Werror'
+    - stage:
         name: build-libc-malloc
         identifier: buildlibcmalloc
         description: ""
