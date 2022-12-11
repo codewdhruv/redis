@@ -262,4 +262,13 @@ pipeline:
                   spec:
                     shell: Sh
                     command: make REDIS_CFLAGS=-Werror
+              - step:
+                  type: Run
+                  name: Start redis-server
+                  identifier: Start_redisserver
+                  spec:
+                    shell: Sh
+                    command: |-
+                      ./src/redis-server --daemonize yes --save "" --logfile external-redis.log \
+                      --enable-protected-configs yes --enable-debug-command yes --enable-module-command yes
   allowStageExecutions: true
