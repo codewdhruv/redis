@@ -364,13 +364,6 @@ pipeline:
                           --enable-protected-configs yes --enable-debug-command yes --enable-module-command yes
                   - step:
                       type: Run
-                      name: Create a single node cluster
-                      identifier: Create_a_single_node_cluster
-                      spec:
-                        shell: Sh
-                        command: ./src/redis-cli cluster addslots $(for slot in {0..16383}; do echo $slot; done); sleep 5
-                  - step:
-                      type: Run
                       name: Run external test
                       identifier: Run_external_test
                       spec:
@@ -378,6 +371,5 @@ pipeline:
                         command: |-
                           ./runtest \
                           --host 127.0.0.1 --port 6379 \
-                          --cluster-mode \
-                          --tags -slow
+                          --tags "-slow -needs:debug"
   allowStageExecutions: true
