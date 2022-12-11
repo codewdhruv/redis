@@ -241,8 +241,8 @@ pipeline:
                         shell: Sh
                         command: ./runtest-moduleapi --verbose --dump-logs
     - stage:
-        name: codeql
-        identifier: codeql
+        name: external server
+        identifier: external_server
         description: ""
         type: CI
         spec:
@@ -256,12 +256,10 @@ pipeline:
           execution:
             steps:
               - step:
-                  type: Plugin
-                  name: Initialize CodeQL
-                  identifier: Initialize_CodeQL
+                  type: Run
+                  name: Build
+                  identifier: Build
                   spec:
-                    connectorRef: DhrubajyotiDocker
-                    image: github/codeql-action/init@v2
-                    settings:
-                      USES: github/codeql-action/init@v2
+                    shell: Sh
+                    command: make REDIS_CFLAGS=-Werror
   allowStageExecutions: true
