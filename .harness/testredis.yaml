@@ -240,86 +240,95 @@ pipeline:
                       spec:
                         shell: Sh
                         command: ./runtest-moduleapi --verbose --dump-logs
-    - stage:
-        name: external server
-        identifier: external_server
-        description: ""
-        type: CI
-        spec:
-          cloneCodebase: true
-          platform:
-            os: Linux
-            arch: Amd64
-          runtime:
-            type: Cloud
-            spec: {}
-          execution:
-            steps:
-              - step:
-                  type: Run
-                  name: Build
-                  identifier: Build
-                  spec:
-                    shell: Sh
-                    command: make REDIS_CFLAGS=-Werror
-              - step:
-                  type: Run
-                  name: Start redis-server
-                  identifier: Start_redisserver
-                  spec:
-                    shell: Sh
-                    command: |-
-                      ./src/redis-server --daemonize yes --save "" --logfile external-redis.log \
-                      --enable-protected-configs yes --enable-debug-command yes --enable-module-command yes
-              - step:
-                  type: Run
-                  name: Run external test
-                  identifier: Run_external_test
-                  spec:
-                    shell: Sh
-                    command: |-
-                      ./runtest \
-                      --host 127.0.0.1 --port 6379 \
-                      --tags -slow
-    - stage:
-        name: external server test
-        identifier: external_server_test
-        description: ""
-        type: CI
-        spec:
-          cloneCodebase: true
-          platform:
-            os: Linux
-            arch: Amd64
-          runtime:
-            type: Cloud
-            spec: {}
-          execution:
-            steps:
-              - step:
-                  type: Run
-                  name: Build
-                  identifier: Build
-                  spec:
-                    shell: Sh
-                    command: make REDIS_CFLAGS=-Werror
-              - step:
-                  type: Run
-                  name: Start redis-server
-                  identifier: Start_redisserver
-                  spec:
-                    shell: Sh
-                    command: |-
-                      ./src/redis-server --daemonize yes --save "" --logfile external-redis.log \
-                      --enable-protected-configs yes --enable-debug-command yes --enable-module-command yes
-              - step:
-                  type: Run
-                  name: Run external test
-                  identifier: Run_external_test
-                  spec:
-                    shell: Sh
-                    command: |-
-                      ./runtest \
-                      --host 127.0.0.1 --port 6379 \
-                      --tags -slow
+    - parallel:
+        - stage:
+            name: external server
+            identifier: external_server
+            description: ""
+            type: CI
+            spec:
+              cloneCodebase: true
+              platform:
+                os: Linux
+                arch: Amd64
+              runtime:
+                type: Cloud
+                spec: {}
+              execution:
+                steps:
+                  - step:
+                      type: Run
+                      name: Build
+                      identifier: Build
+                      spec:
+                        shell: Sh
+                        command: make REDIS_CFLAGS=-Werror
+                  - step:
+                      type: Run
+                      name: Start redis-server
+                      identifier: Start_redisserver
+                      spec:
+                        shell: Sh
+                        command: |-
+                          ./src/redis-server --daemonize yes --save "" --logfile external-redis.log \
+                          --enable-protected-configs yes --enable-debug-command yes --enable-module-command yes
+                  - step:
+                      type: Run
+                      name: Run external test
+                      identifier: Run_external_test
+                      spec:
+                        shell: Sh
+                        command: |-
+                          ./runtest \
+                          --host 127.0.0.1 --port 6379 \
+                          --tags -slow
+        - stage:
+            name: external server test
+            identifier: external_server_test
+            description: ""
+            type: CI
+            spec:
+              cloneCodebase: true
+              platform:
+                os: Linux
+                arch: Amd64
+              runtime:
+                type: Cloud
+                spec: {}
+              execution:
+                steps:
+                  - step:
+                      type: Run
+                      name: Build
+                      identifier: Build
+                      spec:
+                        shell: Sh
+                        command: make REDIS_CFLAGS=-Werror
+                  - step:
+                      type: Run
+                      name: Start redis-server
+                      identifier: Start_redisserver
+                      spec:
+                        shell: Sh
+                        command: |-
+                          ./src/redis-server --daemonize yes --save "" --logfile external-redis.log \
+                          --enable-protected-configs yes --enable-debug-command yes --enable-module-command yes
+                  - step:
+                      type: Run
+                      name: Create a single node cluster
+                      identifier: Create_a_single_node_cluster
+                      spec:
+                        shell: Sh
+                        command: ./src/redis-cli cluster addslots $(for slot in {0..16383}; do echo $slot; done); sleep 5
+                  - step:
+                      type: Run
+                      name: Run external test
+                      identifier: Run_external_test
+                      spec:
+                        shell: Sh
+                        command: |-
+                          ./runtest \
+                          --host 127.0.0.1 --port 6379 \
+                          --cluster-mode \
+                          --tags -slow
   allowStageExecutions: true
