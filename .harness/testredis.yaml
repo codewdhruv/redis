@@ -264,3 +264,4 @@ pipeline:
                     image: github/codeql-action/init@v2
                     settings:
                       USES: github/codeql-action/init@v2
+  allowStageExecutions: true
