@@ -11,6 +11,44 @@ pipeline:
         repoName: redis
         build: <+input>
   stages:
+    - stage:
+        name: ci
+        identifier: ci
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: make
+                  identifier: make
+                  spec:
+                    shell: Sh
+                    command: make REDIS_CFLAGS='-Werror' BUILD_TLS=yes
+              - step:
+                  type: Run
+                  name: module api test
+                  identifier: module_api_test
+                  spec:
+                    shell: Sh
+                    command: ./runtest-moduleapi --verbose --dump-logs
+              - step:
+                  type: Run
+                  name: test
+                  identifier: test
+                  spec:
+                    shell: Sh
+                    command: |-
+                      sudo apt-get install tcl8.6 tclx
+                      ./runtest --verbose --tags -slow --dump-logs
     - parallel:
         - stage:
             name: spell-check
@@ -203,8 +241,8 @@ pipeline:
                         shell: Sh
                         command: ./runtest-moduleapi --verbose --dump-logs
     - stage:
-        name: ci
-        identifier: ci
+        name: codeql
+        identifier: codeql
         description: ""
         type: CI
         spec:
@@ -218,25 +256,11 @@ pipeline:
           execution:
             steps:
               - step:
-                  type: Run
-                  name: make
-                  identifier: make
+                  type: Plugin
+                  name: Initialize CodeQL
+                  identifier: Initialize_CodeQL
                   spec:
-                    shell: Sh
-                    command: make REDIS_CFLAGS='-Werror' BUILD_TLS=yes
-              - step:
-                  type: Run
-                  name: module api test
-                  identifier: module_api_test
-                  spec:
-                    shell: Sh
-                    command: ./runtest-moduleapi --verbose --dump-logs
-              - step:
-                  type: Run
-                  name: test
-                  identifier: test
-                  spec:
-                    shell: Sh
-                    command: |-
-                      sudo apt-get install tcl8.6 tclx
-                      ./runtest --verbose --tags -slow --dump-logs
+                    connectorRef: DhrubajyotiDocker
+                    image: github/codeql-action/init@v2
+                    settings:
+                      USES: github/codeql-action/init@v2
